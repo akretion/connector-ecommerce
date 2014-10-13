@@ -60,7 +60,7 @@ Data Model
 """,
  'depends': [
      'connector',
-     'sale_automatic_workflow',
+     'sale_automatic_workflow_cancel',
      'sale_exceptions',
      'delivery',
      'connector_base_product',
