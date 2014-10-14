@@ -47,6 +47,12 @@ class payment_method(orm.Model):
         'import_rule': 'always',
     }
 
+    def _get_method_domain(self, cr, uid, context=None):
+        domain = super(payment_method, self)._get_method_domain(
+            cr, uid, context=context)
+        domain.append(('import_rule', '=', 'always'))
+        return domain
+
     def get_or_create_payment_method(self, cr, uid, payment_method,
                                      context=None):
         """
