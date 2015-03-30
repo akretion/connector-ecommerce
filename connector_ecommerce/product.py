@@ -86,7 +86,7 @@ class product_template(orm.Model):
             ids = [ids]
         result = super(product_template, self).write(cr, uid, ids,
                                                      vals, context=context)
-        self._price_changed(cr, uid, ids, vals, context=context)
+        #self._price_changed(cr, uid, ids, vals, context=context)
         return result
 
 
@@ -142,13 +142,13 @@ class product_product(orm.Model):
         context['from_product_ids'] = ids
         result = super(product_product, self).write(
             cr, uid, ids, vals, context=context)
-        self._price_changed(cr, uid, ids, vals, context=context)
+        #self._price_changed(cr, uid, ids, vals, context=context)
         return result
 
     def create(self, cr, uid, vals, context=None):
         product_ids = super(product_product, self).create(
             cr, uid, vals, context=context)
-        self._price_changed(cr, uid, [product_ids], vals, context=context)
+        #self._price_changed(cr, uid, [product_ids], vals, context=context)
         return product_ids
 
 
