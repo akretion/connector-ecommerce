@@ -52,6 +52,16 @@ class SaleOrderOnChange(OnChangeManager):
         kwargs = {'context': self.session.context}
         return args, kwargs
 
+    def _get_fiscal_position_id_onchange_param(self, order):
+        args = [
+            None,
+            order['fiscal_position'],
+            order['tax_inc'],
+            [],
+            ]
+        kwargs = {'context': self.session.context}
+        return args, kwargs
+
     def _get_shop_id_onchange_param(self, order):
         args = [None,
                 order['shop_id']]
@@ -143,6 +153,16 @@ class SaleOrderOnChange(OnChangeManager):
             if res.get('value') and 'fiscal_position' in res['value']:
                 order['fiscal_position'] = res['value']['fiscal_position']
             self.merge_values(order, res)
+
+        if res.get('value') and 'tax_inc' in res['value']:
+            order['tax_inc'] = res['value']['tax_inc']
+        #Play onchange on fiscal position
+        args, kwargs = self._get_fiscal_position_id_onchange_param(order)
+        res = sale_model.fiscal_position_id_change(self.session.cr,
+                                             self.session.uid,
+                                             *args,
+                                             **kwargs)
+        self.merge_values(order, res)
         return order
 
     def _get_product_id_onchange_param(self, line, previous_lines, order):
@@ -169,6 +189,11 @@ class SaleOrderOnChange(OnChangeManager):
         if not uos_qty:
             uos_qty = float(line.get('product_uom_qty', 0))
 
+        #This is need for the compatibility on the onchange
+        #with the module sale_tax_inc_exc
+        context = self.session.context.copy()
+        context['tax_inc'] = order.get('tax_inc')
+
         kwargs = {
             'qty': float(line.get('product_uom_qty', 0)),
             'uom': line.get('product_uom'),
@@ -182,7 +207,7 @@ class SaleOrderOnChange(OnChangeManager):
             'packaging': line.get('product_packaging'),
             'fiscal_position': order.get('fiscal_position'),
             'flag': False,
-            'context': self.session.context,
+            'context': context,
         }
         return args, kwargs
 
